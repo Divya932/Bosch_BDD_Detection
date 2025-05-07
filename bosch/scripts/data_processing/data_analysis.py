@@ -155,8 +155,8 @@ def read_json(json_path):
     
     return data
 
-def count_classes(json_path):
-    json_dict = read_json(json_path)
+def count_classes(json_dict):
+    #json_dict = read_json(json_path)
     class_count = {}
     for idx, item_dict in enumerate(json_dict):
         for label in item_dict.get("labels", []):
