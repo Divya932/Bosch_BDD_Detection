@@ -1,0 +1,16 @@
+path: 100k_images
+train: train/images
+val: val/images
+
+nc: 10
+names:
+  0: bike
+  1: bus
+  2: car
+  3: motor
+  4: person
+  5: rider
+  6: train
+  7: truck
+  8: traffic light
+  9: traffic sign
