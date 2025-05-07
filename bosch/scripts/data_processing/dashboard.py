@@ -11,8 +11,8 @@ st.set_page_config(page_title="BDD100K Data Analysis Dashboard", layout="wide")
 st.title("📊 BDD100K Data Analysis Dashboard")
 
 # --- Modify these paths based on where the files are inside the Docker container ---
-train_json_path = "/bosch_od/bosch/data/labels/bdd100k_train.json"
-val_json_path = "/bosch_od/bosch/data/labels/bdd100k_val.json"
+train_json_path = "/bosch_od/bosch/datasets/labels/bdd100k_train.json"
+val_json_path = "/bosch_od/bosch/datasets/labels/bdd100k_val.json"
 
 # Load data from disk
 try:
