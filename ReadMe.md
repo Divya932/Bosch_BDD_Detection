@@ -1,1 +1,0 @@
-## BDD-Object-Detection: Assignment
