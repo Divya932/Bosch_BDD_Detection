@@ -106,14 +106,77 @@ The Dockerfile provides environment for Data Analysis, Model training and evalua
 `docker build -t bdd100k_image_divya .`   
 `docker run -it -p 8501 -v $(pwd):/bosch_od --gpus all --name bdd100k_divya_container bdd100k_image_divya /bin/bash`   
 
-Make sure to place train and val labels json files at `/bosch_od/bosch/data/labels/train.json`   
+Make sure to place train and val labels json files at `/bosch_od/bosch/data/labels/bdd100k_train.json` and `/bosch_od/bosch/data/labels/bdd100k_val.json`   
 
-Run `scripts/data_processing/data_analysis.py` to save analysis results to disk.     
-Run `cd scripts/data_processing && streamlit run dashboard.py --server.address 0.0.0.0 --server.port 8501` to visualize the data on a dashboard.   
+- Run `scripts/data_processing/data_analysis.py` to save analysis results to disk.     
+- Run `cd scripts/data_processing && streamlit run dashboard.py --server.address 0.0.0.0 --server.port 8501` to visualize the data on a dashboard.   
 
 Here are some screenshots of the Dashboard as it runs on your localhost  
-![Dashboard1.png](./assets/streamlit_app.png) ![Dashboard.png](./assets/streamlit_app2.png)
+![Dashboard1.png](./assets/streamlit_app.png) ![Dashboard.png](./assets/streamlit_app2.png)  
 
+
+## Model Selection - Reasoning  
+## 🧠 Why YOLOv8 for Object Detection?
+
+For this BDD100K object detection project, we selected **YOLOv8 (You Only Look Once version 8)** as the model of choice due to its superior balance between **speed**, **accuracy**, **deployment readiness**, and **ease of use**. YOLOv8 also introduces architectural improvements over previous YOLO versions, making it ideal for large-scale traffic scene understanding tasks.
+
+---
+
+### ✅ Key Advantages of YOLOv8
+
+- 🚀 **Real-time inference** (30–60 FPS on modern GPUs, 15+ FPS on edge devices)
+- 🎯 **High accuracy** on small and occluded objects (common in BDD100K)
+- 🧱 **Modular architecture** with support for detection, segmentation, classification
+- 🔧 **Built-in tools**: AutoAnchor tuning, augmentation, visualization, logging
+- 📦 **Easy deployment**: Export to ONNX, TensorRT, TFLite, CoreML
+- 🌐 **Large community** and Ultralytics support for quick debugging and updates
+
+---
+
+## ⚔️ Architecture Comparison: YOLOv8 vs DETR / Transformer Detectors
+
+| Feature | **YOLOv8** | **DETR / DINO / Transformer-based** |
+|--------|------------|--------------------------------------|
+| **Backbone** | CSPDarknet, C2f blocks, lightweight ConvNets | ResNet-50, Swin, ViT, or other transformers |
+| **Neck** | PAN-FPN or BiFPN-like structure for feature fusion | No neck (or simple projection heads) |
+| **Head** | Decoupled classification and regression heads | Transformer decoder layers + FFN |
+| **Detection strategy** | Anchor-free dense prediction with NMS | Set-based matching with Hungarian loss |
+| **Positional encoding** | Implicit via spatial conv layers | Explicit 2D positional encodings |
+| **Training time** | Fast (~6–12 hrs for large datasets) | Long (~24–72 hrs or more) |
+| **Data requirements** | Efficient even with medium data | Requires large datasets and epochs to converge |
+| **Inference speed** | Real-time, optimized | Slow (~3–10 FPS on GPU) |
+| **Object count limitation** | Dynamic with NMS | Fixed-size (e.g., 100 predictions per image) |
+| **Output stability** | High consistency | Output can fluctuate with small input shifts |
+| **Deployment** | Easy (ONNX, TensorRT, CoreML) | Complex due to attention layers, dependencies |
+
+---
+
+### 🔍 Summary
+
+| Criteria | Best Choice |
+|---------|-------------|
+| **Real-time performance** | ✅ YOLOv8 |
+| **Ease of training** | ✅ YOLOv8 |
+| **Data efficiency** | ✅ YOLOv8 |
+| **High-end accuracy (with resources)** | 🔶 DETR/DINO (if latency isn't a concern) |
+| **Small object handling** | ✅ YOLOv8 |
+| **Custom deployment** | ✅ YOLOv8 |
+| **Cutting-edge research experimentation** | 🔶 DETR/DINO |
+
+While transformer-based models like **DETR** and **DINO** are excellent for academic and high-resource setups, their **slow inference speed**, **complex training**, and **challenging deployment** make them **less suitable** for large-scale real-time applications like BDD100K driving datasets. 
+
+---
+
+## ✅ Final Decision: YOLOv8
+
+Given the BDD100K dataset's:
+- **Large image variety and class imbalance**
+- **Need for real-time predictions for deployment on edge devices**
+- **Multiple small, occluded, and overlapping objects**
+
+We chose **YOLOv8** as the most practical and effective solution balancing **modern deep learning techniques** with **production-level readiness**.
+
+---
 
 
 ## ✅ Summary & Recommendations
