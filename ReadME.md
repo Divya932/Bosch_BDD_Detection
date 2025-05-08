@@ -99,6 +99,22 @@ This dataset contains a total of 70,000 train images and 10,000 val images. The 
 
 ---
 
+### Data Analysis code  
+Please clone the repository on your system and build the docker image using the Dockerfile provided with this repository.  
+The Dockerfile provides environment for Data Analysis, Model training and evaluation, and dashboarding.
+`docker build -t bdd100k_image_divya .`   
+`docker run -it -p 8501 -v $(pwd):/bosch_od --gpus all --name bdd100k_divya_container bdd100k_image_divya /bin/bash`  
+
+Make sure to place train and val labels json files at `/bosch_od/bosch/data/labels/train.json`  
+
+Run `scripts/data_processing/data_analysis.py` to save analysis results to disk.   
+Run `cd scripts/data_processing && streamlit run dashboard.py --server.address 0.0.0.0 --server.port 8501` to visualize the data on a dashboard.  
+
+Here are some screenshots of the Dashboard as it runs on your localhost
+![Dashboard.png](./assets/streamlit_app2.png)
+
+
+
 ## ✅ Summary & Recommendations
 
 - Significant **class and condition imbalance** exists in BDD100K.
