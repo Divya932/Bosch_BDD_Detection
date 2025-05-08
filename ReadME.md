@@ -59,7 +59,7 @@ This dataset contains a total of 70,000 train images and 10,000 val images. The 
 ---
 
 ## 🏙️ 2. Scene Type Distribution
-![Scene_distribution.png](./Scene_distribution.png)
+![Scene_distribution.png](./assets/scene_dist.png)
 
 - **Most Common**: `city street` scenes dominate the dataset.
 - **Rare Scenes**: `tunnel`, `parking lot`, and `gas stations` occur infrequently.
@@ -70,7 +70,7 @@ This dataset contains a total of 70,000 train images and 10,000 val images. The 
 ---
 
 ## 🌅 3. Time of Day Distribution
-![Time_distribution.png](./Time_distribution.png)
+![Time_distribution.png](./assets/time_dist.png)
 
 - **Distribution**:
   - `daytime`: Majority of images.
@@ -84,7 +84,7 @@ This dataset contains a total of 70,000 train images and 10,000 val images. The 
 ---
 
 ## 🌦️ 4. Weather Distribution
-![weather_distribution.png](./weather_distribution.png)
+![weather_distribution.png](./assets/weather_dist.png)
 
 - **Dominated by**: `clear` weather.
 - **Underrepresented**: `foggy`, `snowy`, and `rainy` conditions.
