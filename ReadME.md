@@ -10,7 +10,7 @@ This work provides an in-depth analysis of the **BDD100K** dataset, focusing on 
 This dataset contains a total of 70,000 train images and 10,000 val images. The distribution is across 12 classes - bike, bus, car, drivable_area, lane, motor, person, rider, traffic_light, traffic_sign, train, truck. Out of these two classes belong to semantic segmentation - drivable_area and lane. So we consider the remaining 10 classes for our performance analysis. 
 
 ### Combined Train and Validation Sets
-![class_dist_train_val.png](./class_dist_train_val.png)
+![class_dist_train_val.png](./assets/train_val_analysis.png)
 
 - **Dominant Classes**:  
   `car`, `lane`, and `drivable area` appear most frequently in the dataset, with `car` appearing in over 70% of samples.
