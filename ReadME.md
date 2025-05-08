@@ -115,16 +115,16 @@ Here are some screenshots of the Dashboard as it runs on your localhost
 ![Dashboard1.png](./assets/streamlit_app.png) ![Dashboard.png](./assets/streamlit_app2.png)   
 
 
-## Model Selection - Yolov8/Yolov11 - Reasoning    
+## Model Selection - Yolov8m/Yolov11m - Reasoning    
 ### 🧠 Why YOLOv8 for Object Detection?  
 
-For this BDD100K object detection project, we selected **YOLOv8 (You Only Look Once version 8)** as the model of choice. It balances between **speed**, **accuracy**, **deployment readiness**, and **ease of use**. YOLOv8 also introduces architectural improvements over previous YOLO versions, making it ideal for large-scale traffic scene understanding tasks.   
+For this BDD100K object detection project, we selected **YOLOv8m (You Only Look Once version 8)** as the model of choice. It balances between **speed**, **accuracy**, **deployment readiness**, and **ease of use**. YOLOv8 also introduces architectural improvements over previous YOLO versions, making it ideal for large-scale traffic scene understanding tasks.   
 
 This project also experiments with **Yolov11** for a comparison over the BDD100k validation set. Although the differences observed in performance are not huge, but it could be immensely different with an improved data distribution as noted in above sections.
 
 ---
 
-### ✅ Key Advantages of YOLOv8  
+### ✅ Key Advantages of YOLOv8m/YOLOv11m  
 
 - **Real-time inference** (30–60 FPS on modern GPUs, 15+ FPS on edge devices)  
 - **High accuracy** on small and occluded objects (common in BDD100K)  
@@ -135,7 +135,7 @@ This project also experiments with **Yolov11** for a comparison over the BDD100k
 
 ---
 
-### Architecture Comparison: YOLOv8 vs DETR / Transformer Detectors  
+### Architecture Comparison: YOLOv8/YOLOv11m vs DETR / Transformer Detectors  
 
 | Feature | **YOLOv8** | **DETR / DINO / Transformer-based** |  
 |--------|------------|--------------------------------------|  
@@ -157,7 +157,7 @@ While transformer-based models like **DETR** and **DINO** are excellent for high
 
 ---
 
-### ✅ Final Decision: YOLOv8
+### ✅ Final Decision: YOLOv8/Yolov11
 
 Given the BDD100K dataset's:
 - **Large image variety and class imbalance**
@@ -167,7 +167,7 @@ Given the BDD100K dataset's:
 ---   
 
 
-## Model Training - Yolov8/Yolov11  
+## Model Training - Yolov11  
 Setting up training for Yolov8/Yolov11 includes two major steps:  
 - preparing data and annotations from BDD to Yolo format - run script at `bosch/scripts/data_processing/convert_to_yolo.py`
 - Run training script at `bosch/scripts/data_processing/train.py`
@@ -177,20 +177,94 @@ Here's a screenshot of the training initiated after data preparation for this pr
 
 This training was initiated on 2GPUs - availing DDP - Data Distributed Parallel training from Ultralytics pipeline.
 
+## ✅ Evaluation and Visualization   
+
+### 1. **Precision-Recall Curve (PR Curve)** 
+![pr_curve.png](./assets/pr_curve.png)
+- **Best performing classes**:  
+  - `car`: mAP@0.5 ≈ **0.636**  
+  - `truck`: ≈ **0.398**  
+  - `motorcycle`: ≈ **0.355**
+- **Weak classes**:  
+  - `bicycle`, `airplane`, `bus`, `boat` have **0.0 mAP**
+  - `person`, `train`, `traffic light` show **poor precision and recall**
+- **Overall mAP@0.5**: **0.143** — indicates **low detection quality across most classes**
+
+### 2. **Recall-Confidence Curve**  
+![rc_curve.png](./assets/rc_curve.png)
+- High recall at **low confidence** thresholds for most classes, but rapidly drops with increasing confidence.
+- Model outputs many detections with **low confidence**, leading to potential false positives.
+
+### 3. **Precision-Confidence Curve** 
+![pc_curve.png](./assets/pc_curve.png)
+- **Precision is low** at low confidence, only improves at high thresholds (~0.9+).
+- Indicates that many predictions are incorrect unless filtered by very high confidence.
+
+### 4. **F1-Confidence Curve** 
+![f1_curve.png](./assets/f1_curve.png)
+- **Peak F1-score** ≈ **0.16 at 0.235 confidence**
+- Low F1 indicates poor balance between precision and recall.
+- Suggests optimal confidence threshold may be around **0.2–0.3**
+
+---
+
+## 🏆 Best Metric to Use: `mAP@0.5`
+- It offers a **balanced measure** of precision and recall across all classes.
+- Aggregates performance over multiple thresholds.
+- Identifies **per-class weaknesses** and overall detection quality.
+- It is a **standard metric** in object detection benchmarks like COCO and BDD.
+
+While F1-score and confidence-based curves help in **threshold tuning**, **`mAP@0.5` gives the best high-level insight** into model performance.
+
+---  
+
+### Comparison between YOLOv8 and YOLOv11  
+This project compares both YOLOv8m and YOLOv11m for the choice of model. However the performance appears to be quite similar.  
+![yolov8_val.png](./assets/yolov8_val.png)  ![yolov11_val.png](./assets/yolov11_val.png)  
+
+YOLOv11 builds upon YOLOv8, hence it definitely offers improvements in speed, efficiency, and accuracy. It would be a better choice for these reasons during training. 
+## Possible Improvements
+
+### 📦 Data Quality & Distribution
+- **Class imbalance**:
+  - Oversample underrepresented classes like `bus`, `boat`, `airplane`
+  - Use class-specific augmentation to improve data diversity
+- **Annotation quality**:
+  - Review dataset for label errors or missing annotations
+- **Object size/visibility issues**:
+  - Small or occluded objects may require better resolution handling or image cropping
+
+### 🧠 Model Enhancements
+- **Anchor tuning**: Adjust anchors to better match BDD object sizes
+- **Data augmentation**:
+  - Use techniques like mosaic, cutmix, mixup, and color jitter
+- **Weighted Loss functions**:
+  - Increase class weights for rare classes to counter imbalance
+- **Model ensemble**:
+  - Use multiple models or checkpoints to boost per-class accuracy
+
+---
 
 
-## ✅ Summary & Recommendations
+## ✅ Summary & Possible Improvements  
+The YOLOv8 model shows strong performance on frequent classes like `car` and `truck`, but struggles on rare and small-object classes. The overall mAP@0.5 = **0.143** suggests a need for:
+- **Balanced data curation**
+- **Improved training strategies**
+- **Model tuning and augmentation techniques**
 
 - Significant **class and condition imbalance** exists in BDD100K.    
 - Bias toward **urban, clear, daytime conditions** may limit model generalization.    
 - Performance on **rare classes and conditions** may be low without countermeasures.      
 
-### 📌 Recommendations
+### Improvements
 
 - Apply **class-aware loss functions** and sampling strategies.  
 - Use **augmentation and synthetic data** to improve representation of rare scenarios.   
 - Evaluate models with **per-class and per-condition metrics**, not just overall accuracy.   
-- Consider building a **balanced validation subset** for fair evaluation.   
+- Building a **balanced validation subset** for fair evaluation.
+- **Longer training** (more epochs) to improve convergence
+- **Better LR scheduling** (e.g., cosine annealing, warmup)
+- **Finetune pretrained weights** for better feature generalization on BDD
 
 --- 
 
